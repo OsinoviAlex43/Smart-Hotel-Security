@@ -25,4 +25,5 @@ public class AdminController {
     public void checkOut(@PathVariable String roomNumber) {
         roomService.checkOut(roomNumber);
     }
+
 }

@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 import osinovii.spring.smarthotelsecurity.model.Room;
 import osinovii.spring.smarthotelsecurity.repository.RoomRepository;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
@@ -36,11 +36,14 @@ public class RoomService {
 
     //Предсказуемая генерация пароля, потребуются изменения
     private String generateRandomPassword() {
-        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        return ThreadLocalRandom.current()
-                .ints(8, 0, chars.length())
-                .mapToObj(i -> String.valueOf(chars.charAt(i)))
-                .collect(Collectors.joining());
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+        SecureRandom random = new SecureRandom();
+        int length = 12; // Увеличение длины для повышения безопасности
+        StringBuilder password = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            password.append(chars.charAt(random.nextInt(chars.length())));
+        }
+        return password.toString();
     }
 
     public void checkOut(String roomNumber) {
