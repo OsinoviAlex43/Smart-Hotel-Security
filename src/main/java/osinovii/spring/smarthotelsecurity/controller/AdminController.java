@@ -20,6 +20,11 @@ public class AdminController {
         return roomService.getAllAdmins();
     }
 
+    @GetMapping("/all-rooms")
+    public List<Room> getAllRooms(){
+        return roomService.getAllRooms();
+    }
+
     @PostMapping("/check-in/{roomNumber}")
     public void checkIn(@PathVariable String roomNumber) {
         roomService.checkIn(roomNumber);

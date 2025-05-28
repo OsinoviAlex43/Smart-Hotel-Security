@@ -17,16 +17,22 @@ import java.util.List;
 public class RoomService {
 
     private final RoomRepository roomRepository;
-    private final AdminRepository  adminRepository;
+    private final AdminRepository adminRepository;
     private final PasswordEncoder passwordEncoder;
 
     //Метод для получения всех админов
-    public List<Admin> getAllAdmins(){
+    public List<Admin> getAllAdmins() {
         return adminRepository.findAll();
     }
 
+    //Метод для получения всех комнат
+    public List<Room> getAllRooms() {
+        return roomRepository.findAll();
+    }
+
+
     //Метод для добавления нового админа
-    public void addingNewAdmin(Admin admin){
+    public void addingNewAdmin(Admin admin) {
         admin.setPassword(passwordEncoder.encode(admin.getPassword()));
         adminRepository.save(admin);
     }
@@ -37,7 +43,7 @@ public class RoomService {
         roomRepository.save(room);
     }
 
-    //Метод зыселения
+    //Метод заселения
     public void checkIn(String roomNumber) {
         Room room = roomRepository.findByRoomNumber(roomNumber);
         if (room == null) {
@@ -62,6 +68,7 @@ public class RoomService {
         }
         return password.toString();
     }
+
     //Метод выселения
     public void checkOut(String roomNumber) {
         Room room = roomRepository.findByRoomNumber(roomNumber);

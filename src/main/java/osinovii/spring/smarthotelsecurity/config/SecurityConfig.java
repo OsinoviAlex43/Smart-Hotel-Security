@@ -27,15 +27,17 @@ public class SecurityConfig {
                 //.hasRole("ADMIN")
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/admin/**").permitAll()
-                        .requestMatchers("/api/guest/**").permitAll()
+                        .requestMatchers("/login", "/logout", "/resources/**", "/css/**", "/js/**").permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/guest/**").hasRole("GUEST")
                         .anyRequest().authenticated()
                 ).formLogin(form -> form  // Новый стиль вместо formLogin()
-                        .loginPage("/login")
+                        .defaultSuccessUrl("/api/admin/all-admins")
                         .permitAll()
                 )
                 .logout(logout -> logout  // Новый стиль вместо logout()
-                        .logoutSuccessUrl("/login")
+                        .logoutUrl("/logout") // URL для выхода
+                        .logoutSuccessUrl("/login?logout")
                         .permitAll()
                 );
         return http.build();
