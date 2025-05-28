@@ -4,7 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import osinovii.spring.smarthotelsecurity.model.Admin;
 import osinovii.spring.smarthotelsecurity.model.Room;
-import osinovii.spring.smarthotelsecurity.service.RoomService;
+import osinovii.spring.smarthotelsecurity.service.AdminService;
+import osinovii.spring.smarthotelsecurity.service.ManageService;
 
 import java.util.List;
 
@@ -13,37 +14,38 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AdminController {
 
-    private final RoomService roomService;
+    private final AdminService adminService;
+    private final ManageService manageService;
 
     @GetMapping("/all-admins")
     public List<Admin> getAllAdmins(){
-        return roomService.getAllAdmins();
+        return adminService.getAllAdmins();
     }
 
     @GetMapping("/all-rooms")
     public List<Room> getAllRooms(){
-        return roomService.getAllRooms();
+        return adminService.getAllRooms();
     }
 
     @PostMapping("/check-in/{roomNumber}")
     public void checkIn(@PathVariable String roomNumber) {
-        roomService.checkIn(roomNumber);
+        adminService.checkIn(roomNumber);
     }
 
     @PostMapping("/check-out/{roomNumber}")
     public void checkOut(@PathVariable String roomNumber) {
-        roomService.checkOut(roomNumber);
+        adminService.checkOut(roomNumber);
     }
 
     @PostMapping("/new-room")
     public String newRoom(@RequestBody Room room) {
-        roomService.addingNewRoom(room);
+        manageService.addingNewRoom(room);
         return room.getRoomNumber() + " has been added to the room base";
     }
 
     @PostMapping("/new-admin")
     public String newAdmin(@RequestBody Admin admin) {
-        roomService.addingNewAdmin(admin);
+        manageService.addingNewAdmin(admin);
         return admin.getAdminLogin() + " has been added to the admins base";
     }
 }
