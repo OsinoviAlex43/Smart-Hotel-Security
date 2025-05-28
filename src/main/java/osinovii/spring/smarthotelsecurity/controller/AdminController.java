@@ -1,19 +1,23 @@
 package osinovii.spring.smarthotelsecurity.controller;
 
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+import osinovii.spring.smarthotelsecurity.model.Admin;
+import osinovii.spring.smarthotelsecurity.model.Room;
 import osinovii.spring.smarthotelsecurity.service.RoomService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin")
+@RequiredArgsConstructor
 public class AdminController {
 
     private final RoomService roomService;
 
-    public AdminController(RoomService roomService) {
-        this.roomService = roomService;
+    @GetMapping("/all-admins")
+    public List<Admin> getAllAdmins(){
+        return roomService.getAllAdmins();
     }
 
     @PostMapping("/check-in/{roomNumber}")
@@ -26,4 +30,15 @@ public class AdminController {
         roomService.checkOut(roomNumber);
     }
 
+    @PostMapping("/new-room")
+    public String newRoom(@RequestBody Room room) {
+        roomService.addingNewRoom(room);
+        return room.getRoomNumber() + " has been added to the room base";
+    }
+
+    @PostMapping("/new-admin")
+    public String newAdmin(@RequestBody Admin admin) {
+        roomService.addingNewAdmin(admin);
+        return admin.getAdminLogin() + " has been added to the admins base";
+    }
 }

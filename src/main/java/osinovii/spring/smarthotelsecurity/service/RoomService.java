@@ -1,40 +1,57 @@
 package osinovii.spring.smarthotelsecurity.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import osinovii.spring.smarthotelsecurity.model.Admin;
 import osinovii.spring.smarthotelsecurity.model.Room;
+import osinovii.spring.smarthotelsecurity.repository.AdminRepository;
 import osinovii.spring.smarthotelsecurity.repository.RoomRepository;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
+import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class RoomService {
 
     private final RoomRepository roomRepository;
+    private final AdminRepository  adminRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public RoomService(RoomRepository roomRepository, PasswordEncoder passwordEncoder) {
-        this.roomRepository = roomRepository;
-        this.passwordEncoder = passwordEncoder;
+    //Метод для получения всех админов
+    public List<Admin> getAllAdmins(){
+        return adminRepository.findAll();
     }
 
+    //Метод для добавления нового админа
+    public void addingNewAdmin(Admin admin){
+        admin.setPassword(passwordEncoder.encode(admin.getPassword()));
+        adminRepository.save(admin);
+    }
+
+    //Метод для добавления комнаты в бд
+    public void addingNewRoom(Room room) {
+        room.setPassword(passwordEncoder.encode(room.getPassword()));
+        roomRepository.save(room);
+    }
+
+    //Метод зыселения
     public void checkIn(String roomNumber) {
         Room room = roomRepository.findByRoomNumber(roomNumber);
         if (room == null) {
             throw new IllegalArgumentException("Room not found");
         }
-        String newPassword = generateRandomPassword(); // Реализуйте генерацию пароля
+        String newPassword = generateRandomPassword(); // Реализуй генерацию пароля
         room.setPassword(passwordEncoder.encode(newPassword));
         room.setOccupied(true);
         room.setCheckInDate(LocalDateTime.now());
         roomRepository.save(room);
-        // Отправьте пароль гостю (например, через email или SMS)
+        // Отправь пароль гостю (например, через email или SMS)
     }
 
-    //Предсказуемая генерация пароля, потребуются изменения
+    //Проверь насколько надежен пароль
     private String generateRandomPassword() {
         String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
         SecureRandom random = new SecureRandom();
@@ -45,7 +62,7 @@ public class RoomService {
         }
         return password.toString();
     }
-
+    //Метод выселения
     public void checkOut(String roomNumber) {
         Room room = roomRepository.findByRoomNumber(roomNumber);
         if (room == null) {

@@ -10,7 +10,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import osinovii.spring.smarthotelsecurity.model.Admin;
 import osinovii.spring.smarthotelsecurity.model.Room;
+import osinovii.spring.smarthotelsecurity.repository.AdminRepository;
 import osinovii.spring.smarthotelsecurity.repository.RoomRepository;
 
 import java.util.Collections;
@@ -22,9 +24,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                //.hasRole("ADMIN")
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/guest/**").hasRole("GUEST")
+                        .requestMatchers("/api/admin/**").permitAll()
+                        .requestMatchers("/api/guest/**").permitAll()
                         .anyRequest().authenticated()
                 ).formLogin(form -> form  // Новый стиль вместо formLogin()
                         .loginPage("/login")
@@ -38,19 +42,29 @@ public class SecurityConfig {
     }
 
     @Bean
-    public UserDetailsService userDetailsService(RoomRepository roomRepository) {
+    public UserDetailsService userDetailsService(RoomRepository roomRepository, AdminRepository adminRepository) {
         return username -> {
             Room room = roomRepository.findByRoomNumber(username);
-            if (room == null) {
-                throw new UsernameNotFoundException("Room not found: " + username);
+            if (room != null) {
+                return new org.springframework.security.core.userdetails.User(
+                        room.getRoomNumber(),
+                        room.getPassword(),
+                        Collections.singletonList(new SimpleGrantedAuthority(room.getRole()))
+                );
             }
-            return new org.springframework.security.core.userdetails.User(
-                    room.getRoomNumber(),
-                    room.getPassword(),
-                    Collections.singletonList(new SimpleGrantedAuthority(room.getRole()))
-            );
+            Admin admin = adminRepository.findByAdminLogin(username);
+            if (admin != null) {
+                return new org.springframework.security.core.userdetails.User(
+                        admin.getAdminLogin(),
+                        admin.getPassword(),
+                        Collections.singletonList(new SimpleGrantedAuthority(admin.getRole()))
+                );
+            }
+            throw new UsernameNotFoundException("User not found: " + username);
         };
     }
+
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
