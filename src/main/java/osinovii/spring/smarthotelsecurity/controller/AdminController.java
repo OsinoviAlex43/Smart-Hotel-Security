@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.*;
 import osinovii.spring.smarthotelsecurity.model.Admin;
 import osinovii.spring.smarthotelsecurity.model.Room;
 import osinovii.spring.smarthotelsecurity.service.AdminService;
-import osinovii.spring.smarthotelsecurity.service.ManageService;
 
 import java.util.List;
 
@@ -15,7 +14,6 @@ import java.util.List;
 public class AdminController {
 
     private final AdminService adminService;
-    private final ManageService manageService;
 
     @GetMapping("/all-admins")
     public List<Admin> getAllAdmins(){
@@ -39,13 +37,13 @@ public class AdminController {
 
     @PostMapping("/new-room")
     public String newRoom(@RequestBody Room room) {
-        manageService.addingNewRoom(room);
+        adminService.addingNewRoom(room);
         return room.getRoomNumber() + " has been added to the room base";
     }
 
     @PostMapping("/new-admin")
     public String newAdmin(@RequestBody Admin admin) {
-        manageService.addingNewAdmin(admin);
+        adminService.addingNewAdmin(admin);
         return admin.getAdminLogin() + " has been added to the admins base";
     }
 }

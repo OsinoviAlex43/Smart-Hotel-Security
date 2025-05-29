@@ -30,6 +30,18 @@ public class AdminService {
         return roomRepository.findAll();
     }
 
+    //Метод для добавления нового админа
+    public void addingNewAdmin(Admin admin) {
+        admin.setPassword(passwordEncoder.encode(admin.getPassword()));
+        adminRepository.save(admin);
+    }
+
+    //Метод для добавления комнаты в бд
+    public void addingNewRoom(Room room) {
+        room.setPassword(passwordEncoder.encode(room.getPassword()));
+        roomRepository.save(room);
+    }
+
     //Метод заселения
     public void checkIn(String roomNumber) {
         Room room = roomRepository.findByRoomNumber(roomNumber);
